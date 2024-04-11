@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang = "en">
+<head>
+    <meta charset="UTF-8">
+    <meta name = "viewport" content = "width = device-width, initial-scale = 1.0">
+    <title> The WordSearch Page</title>
+    <link rel="icon" href="https://tse2.mm.bing.net/th?id=OIP.az-4oYRCXdJs_1dudcBTXwHaHa&pid=Api&P=0&h=220">
+
+    <link rel="stylesheet" href="style.css">
+    <style>
+    .game-board
+    {
+        display: grid;
+        grid-template-columns: repeat(50, 1fr);
+        grid-gap: 1px;
+    }
+
+    .game-board button
+    {
+        width: 100%;
+        height: 20px;
+        padding: 0;
+        margin: 0;
+        font-size: 12px;
+    }
+    </style>
+</head>
+
+<body>
+
+
+    <img src="https://is3-ssl.mzstatic.com/image/thumb/Purple62/v4/ab/3c/2b/ab3c2b05-18aa-9516-e762-a03db9a81036/source/512x512bb.jpg" height="100" width="600">
+
+
+    <!-- User Entry -->
+    <div id = "phase1">
+    <form>
+        <label for ="username"><b> User Name </b></label><br>
+        <input type = "text" id = "username" placeholder = "Enter your username">
+        <br>
+    </form>
+
+
+        <button onclick = "enterUsername()">Login</button>
+
+        
+    </div>
+
+    <script>
+        function enterUsername()
+        {
+            var usernameInput = document.getElementById('username');
+            var username = usernameInput.value.trim();
+
+            if(username === "")
+            {
+                alert('Please enter a username.');
+                return;
+            }
+
+            document.getElementById('phase1').style.display = 'none';
+            document.getElementById('phase2').style.display = 'block';
+        }
+    </script>
+
+    <!-- Phase 2 & 3: Main Menu & Game -->
+    <div id = "phase2" style = "display:none;">
+        <!-- Left: Players & Messages -->
+        <div class = "left-panel">
+        <div id = "playersList">Online Players:</div>
+          <iframe src="https://www.solidbackgrounds.com/images/2048x1536/2048x1536-smoky-black-solid-color-background.jpg" frameborder="2" height="100" width="200"></iframe>
+
+            <div id = "messageBoard">ChatBox:</div>
+            <iframe src="https://www.solidbackgrounds.com/images/2048x1536/2048x1536-smoky-black-solid-color-background.jpg" frameborder="2" height="100" width="250"></iframe>
+
+        <a id="chatmessage">
+            <input type = "text" id = "message" placeholder = "Type your message">
+            <br>
+        
+            <button id = "btn1" onclick = "send()"> Send</button>
+        </a> 
+
+        </div>
+
+        <p class ="output" id="output1"></p>
+      
+       
+
+        <script>
+            function send(){
+                var messageInput = document.getElementById('message');
+                
+            var message = messageInput.value.trim();
+
+            if(message === "")
+            {
+                alert('No message is written.');
+                return;
+            }
+            
+            
+            const txt1 = document.getElementById('message');
+            const btn1 = document.getElementById('btn1');
+            const out1 = document.getElementById('output1');
+
+            function fun1(){
+                out1.innerHTML =txt1.value;
+
+            }
+
+            btn1.addEventListener('click',fun1);
+        }
+
+        </script>
+
+        <!-- Middle: Join Buttons -->
+<hr>     
+        <div class = "join-buttons">
+            <label><b> Game Type </b></label><br>
+            
+            <button onclick = "joinGame(2)">Join 2</button>
+            <button onclick = "joinGame(3)">Join 3</button>
+            <button onclick = "joinGame(4)">Join 4</button>
+        </div>
+<hr>
+
+
+        <!-- Right: Leaderboard -->
+        <div id = "leaderboard">Leaderboard:</div>
+    </div>
+
+    <div id = "phase 3">
+
+
+    </div>
+            <div id = "gameBoard" class = "game-board"></div>
+
+    <div class = "stats-page">
+        Stats Here
+        <button onclick = "showStats()">Show Stats</button>
+    </div>
+
+    <script>
+
+    var connection;
+
+    function joinGame(playerCount)
+    {
+        var serverUrl = "ws://" + window.location.hostname + ":9880";
+        connection = new WebSocket(serverUrl);
+        var idx = -1;
+        var gameid = -1;
+
+        connection.onopen = function(evt)
+        {
+            console.log("open");
+        }
+
+        connection.onclose = function(evt)
+        {
+            console.log("close");
+        }
+
+        connection.onmessage = function(evt)
+        {
+            console.log("Message received: " + evt.data);
+            const obj = JSON.parse(evt.data);
+
+            if('YouAre' in obj)
+            {
+                idx = ["Player1", "Player2", "Player3", "Player4"].indexOf(obj.YouAre);
+                gameid = obj.GameId;
+            }
+
+            if(idx > 0 && obj.board)
+            {
+                document.getElementById('phase 2').style.display = 'none';
+                document.getElementById('phase 3').style.display = 'block';
+                    
+                initializeGameBoard(obj.board);
+            }
+        }
+    }
+        
+    function initializeGameBoard(boardData)
+    {
+        const board = document.getElementById('gameBoard');
+        for(let i = 0; i < 50; i++)
+        {
+            for(let j = 0; j < 50; j++)
+            {
+                const button = document.createElement('button');
+                button.textContent = boardData[i][j];
+                button.onclick = function(){selectCharacter(i, j);};
+                board.appendChild(button);
+            }
+        }
+    }
+        
+    function selectCharacter(row, column)
+    {
+        console.log(`Character at ${row}, ${column} selected`);
+
+        const message = JSON.stringify({action: "selectCharacter", row: row, column: column});
+        connection.send(message);
+    }
+    </script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+body {
+  font-family: Arial, sans-serif;
+}
+
+#lobby {
+  display: flex;
+  justify-content: space-around;
+}
+
+#loginForm {
+  width: 20%;
+}
+
+#onlineGamers, #gameType, #leaderboard, #wordSearchGame, #chatSection {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin: 5px;
+}
+
+#gameBoard {
+  display: grid;
+  grid-template-columns: repeat(15, 2em); /* Example for 15x15 board */
+  grid-gap: 2px;
+}
+
+#gameBoard div {
+  width: 2em;
+  height: 2em;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+
+#chatBox {
+  height: 200px;
+  overflow-y: auto;
+}
+
+#wordsToFind {
+  margin-left: 20px;
+}
+
+/* Additional styles can be added as needed */
