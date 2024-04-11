@@ -6,11 +6,9 @@ public class Message {
     private String type;
     private String username;
     private List<String> activeUsers;
+    private String message; // Field for chat messages
 
-    public Message() {
-        // Default constructor needed for JSON deserialization
-    }
-
+    // Constructors for different purposes
     public Message(String type, String username) {
         this.type = type;
         this.username = username;
@@ -19,6 +17,12 @@ public class Message {
     public Message(String type, List<String> activeUsers) {
         this.type = type;
         this.activeUsers = activeUsers;
+    }
+
+    public Message(String type, String username, String message) {
+        this.type = type;
+        this.username = username;
+        this.message = message;
     }
 
     // Getters and setters
@@ -44,5 +48,13 @@ public class Message {
 
     public void setActiveUsers(List<String> activeUsers) {
         this.activeUsers = activeUsers;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

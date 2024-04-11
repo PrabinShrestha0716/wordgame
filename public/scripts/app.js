@@ -57,7 +57,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Get username from form input
         var username = document.getElementById('username').value;
-
+        // save username to localstorage
+        localStorage.setItem("username", username);
         // Construct message to send to server
         const message = {
             type: 'login',
@@ -68,4 +69,30 @@ document.addEventListener('DOMContentLoaded', function() {
       const response =   websocket.send(JSON.stringify(message));
       loginForm.style.display = "none";
     });
+
+    function sendChatMessage() {
+        const messageInput = document.getElementById('chatInput');
+        const message = messageInput.value;
+        messageInput.value = ''; // Clear input after sending
+    
+        const chatMessage = {
+            type: 'chatMessage',
+            username: username, // Assume username is globally stored after login
+            message: message
+        };
+        websocket.send(JSON.stringify(chatMessage));
+    }
+    
+    websocket.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        if (data.type === 'activeUsersUpdate') {
+            updateActiveUsers(data.activeUsers);
+        } else if (data.type === 'chatMessage') {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageElement = document.createElement('div');
+            messageElement.textContent = data.username + ': ' + data.message;
+            chatMessages.appendChild(messageElement);
+            chatMessages.scrollTop = chatMessages.scrollHeight; // Auto-scroll to the latest message
+        }
+    };
 });

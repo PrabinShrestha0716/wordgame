@@ -8,6 +8,8 @@ import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.google.gson.Gson;
+
 import net.freeutils.httpserver.HTTPServer;
 import net.freeutils.httpserver.HTTPServer.ContextHandler;
 import net.freeutils.httpserver.HTTPServer.FileContextHandler;
@@ -97,6 +99,16 @@ public class HttpServer {
                     }
                     resp.getHeaders().add("Content-Type", "text/plain");
                     resp.send(200, "Active Users: " + activeUserNames);
+                    return 0;
+                }
+            });
+            host.addContext("/api/wordlist", new ContextHandler() {
+                public int serve(Request req, Response resp) throws IOException {
+                    WordList wordList = new WordList(); // Assuming WordList is ready to use
+                    Gson gson = new Gson();
+                    String wordListJson = gson.toJson(wordList.getWordList()); // Serialize word list to JSON
+                    resp.getHeaders().add("Content-Type", "application/json");
+                    resp.send(200, wordListJson);
                     return 0;
                 }
             });

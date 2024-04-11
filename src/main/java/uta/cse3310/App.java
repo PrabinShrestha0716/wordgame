@@ -70,10 +70,11 @@ public class App extends WebSocketServer {
   Set<Player> activeUsers = new HashSet<>();
   int GameId = 1;
 
-   // Keep track of connected sessions
-   private static final Map<String, WebSocket> userSessions = new HashMap<>();
-  //  private static final CopyOnWriteArrayList<String> activeUsers = new CopyOnWriteArrayList<>();
-   
+  // Keep track of connected sessions
+  private static final Map<String, WebSocket> userSessions = new HashMap<>();
+  // private static final CopyOnWriteArrayList<String> activeUsers = new
+  // CopyOnWriteArrayList<>();
+
   private Puzzle wordGenerator;
 
   public App(int port) {
@@ -95,7 +96,7 @@ public class App extends WebSocketServer {
   public void onOpen(WebSocket conn, ClientHandshake handshake) {
 
     System.out.println(conn.getRemoteSocketAddress().getAddress().getHostAddress() + " connected");
-
+    userSessions.put(conn.getRemoteSocketAddress().toString(), conn);
     ServerEvent E = new ServerEvent();
     // search for a game needing a player
     WordSearchGame G = null;
@@ -154,41 +155,49 @@ public class App extends WebSocketServer {
 
   public void onClose(WebSocket conn, int code, String reason, boolean remote) {
     System.out.println(conn + " has closed");
+    userSessions.remove(conn.getRemoteSocketAddress().toString());
   }
 
   @Override
   public void onMessage(WebSocket conn, String message) {
-      System.out.println(conn + ": " + message);
-      Gson gson = new Gson();
-      Message receivedMessage = gson.fromJson(message, Message.class);
-  
-      if (receivedMessage.getType().equals("login")) {
-          String username = receivedMessage.getUsername();
-          if (!isUsernameTaken(username)) {
-              Player player = new Player(username);
-              activeUsers.add(player);
-  
-              // Broadcast active users to all clients
-              broadcastActiveUsers();
-          } else {
-              // Notify the client that the username is already taken
-              conn.send(gson.toJson(new Message("usernameTaken", username)));
-          }
-      }
-      
+    System.out.println(conn + ": " + message);
+    Gson gson = new Gson();
+    Message receivedMessage = gson.fromJson(message, Message.class);
+
+    if ("login".equals(receivedMessage.getType())) {
+      handleLogin(conn, receivedMessage.getUsername());
+    } else if ("chatMessage".equals(receivedMessage.getType())) {
+      broadcastChatMessage(gson.toJson(receivedMessage)); // Broadcast the chat message
+    }
   }
-  
+
+  private void handleLogin(WebSocket conn, String username) {
+    if (!isUsernameTaken(username)) {
+      Player player = new Player(username);
+      activeUsers.add(player);
+      broadcastActiveUsers();
+    } else {
+      Gson gson = new Gson();
+      conn.send(gson.toJson(new Message("usernameTaken", username)));
+    }
+  }
+
+  private void broadcastChatMessage(String messageJson) {
+    for (WebSocket session : userSessions.values()) {
+      session.send(messageJson);
+    }
+  }
+
   // Method to check if a username is already taken
   private boolean isUsernameTaken(String username) {
 
-      for (Player player : activeUsers) {
-          if (player.getName().equals(username)) {
-              return true;
-          }
+    for (Player player : activeUsers) {
+      if (player.getName().equals(username)) {
+        return true;
       }
-      return false;
+    }
+    return false;
   }
-  
 
   // Broadcast active users to all clients
   private void broadcastActiveUsers() {

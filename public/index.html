@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,11 +13,17 @@
             margin: 20px;
             text-align: center;
         }
+
         .online-user {
             color: green;
         }
+
+        #gameCanvas {
+            border: 1px solid #000;
+        }
     </style>
 </head>
+
 <body>
     <div id="lobby" class="container">
         <h1 class="text-center mt-5">WORDSEARCH</h1>
@@ -27,26 +34,62 @@
             </div>
             <button type="submit" class="btn btn-primary">Login</button>
         </form>
-        <div id="activeUsers" class="mt-5">
-            <h2>Active Users</h2>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th scope="col">Username</th>
-                        <th scope="col">Status</th>
-                    </tr>
-                </thead>
-                <tbody id="activeUsersList">
-                    <!-- Active users will be populated here -->
-                </tbody>
-            </table>
+        <div class="container">
+            <div class="row">
+                <div class="col-sm">
+                    <div id="activeUsers" class="mt-5">
+                        <h2>Active Users</h2>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Username</th>
+                                    <th scope="col">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="activeUsersList">
+                                <!-- Active users will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div id="chatSection" class="mt-5 br-3">
+                        <h2>Chat</h2>
+                        <div id="chatMessages" class="mb-3"
+                            style="height: 300px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px;"></div>
+                        <input type="text" id="chatInput" class="form-control" placeholder="Type a message...">
+                        <button class="btn btn-primary mt-2" onclick="sendChatMessage()">Send</button>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-    
-    <div id="gameSection" class="container mt-5" style="display: none;">
-        <!-- Game section content will be added here -->
-    </div>
-    
-    <script src="scripts/app.js"></script>
+        <button class="btn btn-success" id="startGame">Start Game</button>
+        <div id="gameSection" class="container mt-5" style="display: none;">
+            <div class="container mt-4" id="gameSection" style="
+            display:'none'">
+                <h1 class="text-center">Word Search Puzzle</h1>
+                <div class="container">
+                    <canvas id="gameCanvas" width="500" height="500" style="border:1px solid #000;"></canvas>
+                    <div>Selected Word: <span id="selectedWord"></span></div>
+                </div>
+            </div>
+
+
+
+        </div>
+
+
+
+
+
+
+
+
+
+        <script src="scripts/app.js"></script>
+        <script src="scripts/grid.js"></script>
+
 </body>
+
 </html>

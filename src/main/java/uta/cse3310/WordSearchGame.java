@@ -28,8 +28,6 @@ public class WordSearchGame {
         Msg[0] = "Waiting for other player to join";
         Msg[1] = "";
         activeGames = 0;
-
-
     }
 
     public void startGame() {
