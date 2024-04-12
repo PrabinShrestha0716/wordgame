@@ -70,11 +70,17 @@ document.addEventListener('DOMContentLoaded', function() {
       loginForm.style.display = "none";
     });
 
+    messageform.addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent default form submission
+
+        // Get message from form input
+        var message = document.getElementById('chatInput').value;
+    })
+
     function sendChatMessage() {
         const messageInput = document.getElementById('chatInput');
         const message = messageInput.value;
         messageInput.value = ''; // Clear input after sending
-    
         const chatMessage = {
             type: 'chatMessage',
             username: username, // Assume username is globally stored after login

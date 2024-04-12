@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const startButton = document.querySelector("#startGame");
     const ctx = canvas.getContext('2d');
     const cellSize = 50; // Assuming each cell is 50x50 pixels
-    const gridSize = 10; // Grid size
+    const gridSize = 50; // Grid size
     let grid = createEmptyGrid(gridSize); // Create an empty grid
 
     startButton.addEventListener('click', function(){
